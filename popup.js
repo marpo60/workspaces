@@ -21,7 +21,8 @@ function clean() {
 }
 
 function openWorkspace(e) {
-  var key = e.target.innerText;
+  var key = e.target._key;
+
   chrome.storage.local.get(key, function(items) {
     chrome.windows.create({ url: items[key] });
   });
@@ -29,13 +30,18 @@ function openWorkspace(e) {
 
 function populateWorkspaces() {
   var workspaces = document.getElementById("workspaces")
+
   workspaces.innerHTML = "";
 
   chrome.storage.local.get(null, function(items) {
     var keys = Object.keys(items);
+
     keys.forEach(function(key){
       var workspace = document.createElement("li");
+
+      workspace._key = key;
       workspace.appendChild(document.createTextNode(key));
+      workspace.appendChild(document.createTextNode(" [" + items[key].length  + "]"));
       workspace.addEventListener("click", openWorkspace);
 
       workspaces.appendChild(workspace);
