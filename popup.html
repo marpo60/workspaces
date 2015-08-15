@@ -2,24 +2,106 @@
   <head>
     <title>Save workspaces</title>
     <style>
+      /*
+        Colors
+
+        background-item: rgb(246,246,246)
+        background-item-alternate: rgb(232,232,232)
+        forecolor: rgb(51,51,51)
+
+        highlight-background: rgb(185,5,4);
+        highlight-background-alternate: rgb(232,232,232)
+        highlight-forecolor: rgb(255,255,255);
+      */
       body {
+        color: rgb(51,51,51);
+        background-color: rgb(246,246,246);
         font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
-        font-size: 100%;
+        font-size: 14px;
+
+        padding: 0;
+        margin: 10px;
+        width: 336px;
+        min-height: 300px;
       }
 
-      li {
+      ul {
+        padding-left: 0;
+      }
+
+      a {
         color: blue;
+        text-decoration: underline;
         cursor: pointer;
+      }
+
+      input[type=text] {
+        font-size: 1em;
+        display: block;
+        line-height: 1.2em;
+        padding: 5px;
+        width: 100%;
+      }
+
+      form {
+        margin-bottom: 2px;
+      }
+
+      p {
+        margin: 0;
+        text-align: right;
+      }
+
+      #workspaces ul {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      #workspaces li {
+        width: 100px;
+        min-height: 100px;
+        margin: 5px;
+        border: 1px solid rgb(232,232,232);
+        border-radius: 4px;
+        display: block;
+        position: relative;
+        text-align: center;
+        list-style-type: none;
+        cursor: pointer;
+        transition: all ease-in 200ms;
+      }
+
+      #workspaces li > span {
+        width: 100px;
+        word-wrap: break-word;
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translate(0, -50%);
+      }
+
+      #workspaces li:nth-of-type(2n+1) {
+        background: rgb(232,232,232);
+      }
+
+      #workspaces li:hover {
+        background: rgb(185,5,4);
+        border-color: rgb(153,1,0);
+        color: rgb(255,255,255);
       }
     </style>
 
     <script src="popup.js"></script>
   </head>
   <body>
-    <input id="name" type="text"></input>
-    <button id="save"> Save me!</button>
-    <button id="clean"> Clean</button>
-    <ul id="workspaces"></ul>
+    <form id="save">
+      <input id="name" type="text" placeholder="Workspace name..." required></input>
+    </form>
+    <p>
+      <a id="clean">Remove all workspaces</a>
+    </p>
+    <div id="workspaces"></div>
   </body>
 </html>
 
