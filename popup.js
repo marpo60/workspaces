@@ -66,8 +66,9 @@ Workspace.onChange = function(callback) {
  *
  * @constructor
  */
-function HtmlBuilder() {
-  this.container = document.createElement("ul");
+function HtmlBuilder(container) {
+  this.container = container;
+  this.node = document.createElement("ul");
 }
 
 HtmlBuilder.prototype.buildWorkspace = function(workspace) {
@@ -81,16 +82,17 @@ HtmlBuilder.prototype.buildWorkspace = function(workspace) {
   // This is the easiest way to link the workspace with the HTML element
   box.workspace = workspace;
 
-  this.container.appendChild(box);
+  this.node.appendChild(box);
 };
 
 HtmlBuilder.prototype.buildEmptyState = function() {
-  this.container = document.createTextNode(
+  this.node = document.createTextNode(
     "To create a new workspace just write the name of the workspace on the input and hit enter!");
 };
 
-HtmlBuilder.prototype.toHtml = function() {
-  return this.container;
+HtmlBuilder.prototype.done = function() {
+  this.container.innerHTML = "";
+  this.container.appendChild(this.node);
 };
 
 /**
@@ -129,8 +131,7 @@ function openWorkspace(e) {
 
 function populateWorkspaces() {
   Workspace.all().then(function(workspaces) {
-    var builder = new HtmlBuilder(),
-        container = document.getElementById("workspaces");
+    var builder = new HtmlBuilder(document.getElementById("workspaces"));
 
     if (workspaces.length) {
       workspaces.forEach(function(workspace) {
@@ -140,7 +141,6 @@ function populateWorkspaces() {
       builder.buildEmptyState();
     }
 
-    container.innerHTML = "";
-    container.appendChild(builder.toHtml());
+    builder.done();
   });
 }
