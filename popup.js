@@ -38,9 +38,9 @@ Workspace.all = function() {
   }).then(this.mapLocalStorageItemsToWorkspaces);
 };
 
-Workspace.open = function(name) {
-  chrome.storage.local.get(name, function(bucket) {
-    chrome.windows.create({ url: bucket[name] });
+Workspace.open = function(workspace) {
+  chrome.storage.local.get(workspace.name, function(bucket) {
+    chrome.windows.create({ url: bucket[workspace.name] });
   });
 };
 
@@ -67,33 +67,37 @@ Workspace.onChange = function(callback) {
  * @constructor
  */
 function HtmlBuilder() {
-  this.workspaces = [];
+  this.container = document.createElement("ul");
 }
 
 HtmlBuilder.prototype.buildWorkspace = function(workspace) {
-  this.workspaces.push(workspace);
+  var box = document.createElement("li"),
+      text = document.createElement("span");
+
+  text.appendChild(document.createTextNode(workspace.name));
+  text.appendChild(document.createTextNode(" [" + workspace.numberOfItems()  + "]"));
+  box.appendChild(text);
+
+  // This is the easiest way to link the workspace with the HTML element
+  box.workspace = workspace;
+
+  this.container.appendChild(box);
+};
+
+HtmlBuilder.prototype.buildEmptyState = function() {
+  this.container = document.createTextNode(
+    "To create a new workspace just write the name of the workspace on the input and hit enter!");
 };
 
 HtmlBuilder.prototype.toHtml = function() {
-  var container = document.createElement("ul"),
-      node;
-
-  this.workspaces.forEach(function(workspace) {
-      node = document.createElement("li");
-      node.workspaceName = workspace.name;
-      node.appendChild(document.createTextNode(workspace.name));
-      node.appendChild(document.createTextNode(" [" + workspace.numberOfItems()  + "]"));
-      container.appendChild(node);
-  });
-
-  return container;
+  return this.container;
 };
 
 /**
  * Application
  */
 document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById("save").addEventListener("click", save);
+  document.getElementById("save").addEventListener("submit", save);
   document.getElementById("clean").addEventListener("click", Workspace.destroyAll);
   document.getElementById("workspaces").addEventListener("click", openWorkspace);
 
@@ -102,7 +106,9 @@ document.addEventListener('DOMContentLoaded', function() {
   populateWorkspaces();
 });
 
-function save() {
+function save(event) {
+  event.preventDefault();
+
   var name = document.getElementById("name").value;
 
   document.getElementById("name").value = "";
@@ -110,15 +116,15 @@ function save() {
 }
 
 function openWorkspace(e) {
-  var key = e.target.workspaceName;
+  var workspace = e.target.workspace;
 
   // if the target of the click is not a workspace element just ignore the
   // click
-  if (!key) {
+  if (!workspace) {
     return;
   }
 
-  Workspace.open(key);
+  Workspace.open(workspace);
 }
 
 function populateWorkspaces() {
@@ -126,9 +132,13 @@ function populateWorkspaces() {
     var builder = new HtmlBuilder(),
         container = document.getElementById("workspaces");
 
-    workspaces.forEach(function(workspace) {
-      builder.buildWorkspace(workspace);
-    });
+    if (workspaces.length) {
+      workspaces.forEach(function(workspace) {
+        builder.buildWorkspace(workspace);
+      });
+    } else {
+      builder.buildEmptyState();
+    }
 
     container.innerHTML = "";
     container.appendChild(builder.toHtml());
