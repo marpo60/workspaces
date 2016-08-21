@@ -48,6 +48,10 @@ Workspace.destroyAll = function() {
   chrome.storage.local.clear();
 };
 
+Workspace.destroy = function(name) {
+  chrome.storage.local.remove(name);
+};
+
 Workspace.createFromCurrentWindow = function(name) {
   chrome.tabs.query({ currentWindow: true }, function(tabs){
     var urlList = tabs.map(function(tab) { return tab.url; }),
@@ -73,14 +77,25 @@ function HtmlBuilder(container) {
 
 HtmlBuilder.prototype.buildWorkspace = function(workspace) {
   var box = document.createElement("li"),
-      text = document.createElement("span");
+      text = document.createElement("span"),
+      button = document.createElement("button");
 
   text.appendChild(document.createTextNode(workspace.name));
   text.appendChild(document.createTextNode(" [" + workspace.numberOfItems()  + "]"));
+
+  button.appendChild(document.createTextNode("X"));
+  button.addEventListener("click", function(e) {
+    Workspace.destroy(this.workspace.name);
+
+    e.stopPropagation();
+  });
+
   box.appendChild(text);
+  box.appendChild(button);
 
   // This is the easiest way to link the workspace with the HTML element
   box.workspace = workspace;
+  button.workspace = workspace;
 
   this.node.appendChild(box);
 };
