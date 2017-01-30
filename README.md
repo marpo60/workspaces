@@ -25,4 +25,6 @@ click on the workspace.
 
 ## License
 
-TBD
+workspaces is licensed under the MIT license.
+
+See [LICENSE](./LICENSE) for the full license text.
