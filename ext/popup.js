@@ -1,3 +1,7 @@
+'use strict';
+
+(() => {
+
 /**
  * Represents a group of URLs grouped by a name
  *
@@ -20,7 +24,7 @@ Workspace.prototype.save = function() {
 
   bucket[this.name] = this.urlList;
 
-  // TODO: We can return a promise of this action
+  // We can return a promise of this action
   chrome.storage.local.set(bucket);
 };
 
@@ -54,7 +58,7 @@ Workspace.destroy = function(name) {
 
 Workspace.createFromCurrentWindow = function(name) {
   chrome.tabs.query({ currentWindow: true }, function(tabs){
-    var urlList = tabs.map(function(tab) { return tab.url; }),
+    var urlList = tabs.map(function(tab) {return tab.url;}),
         workspace = new Workspace(name, urlList);
 
     workspace.save();
@@ -65,11 +69,6 @@ Workspace.onChange = function(callback) {
   chrome.storage.onChanged.addListener(callback);
 };
 
-/**
- * Builds a HTML list of workspaces
- *
- * @constructor
- */
 function HtmlBuilder(container) {
   this.container = container;
   this.node = document.createElement("ul");
@@ -81,11 +80,11 @@ HtmlBuilder.prototype.buildWorkspace = function(workspace) {
       button = document.createElement("button");
 
   text.appendChild(document.createTextNode(workspace.name));
-  text.appendChild(document.createTextNode(" [" + workspace.numberOfItems()  + "]"));
+  text.appendChild(document.createTextNode(`[${workspace.numberOfItems()}]`));
 
   button.appendChild(document.createTextNode("X"));
   button.addEventListener("click", function(e) {
-    Workspace.destroy(this.workspace.name);
+    Workspace.destroy(workspace.name);
 
     e.stopPropagation();
   });
@@ -159,3 +158,4 @@ function populateWorkspaces() {
     builder.done();
   });
 }
+})();
