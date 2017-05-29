@@ -83,18 +83,18 @@ HtmlBuilder.prototype.buildWorkspace = function(workspace) {
   text.appendChild(document.createTextNode(`[${workspace.numberOfItems()}]`));
 
   button.appendChild(document.createTextNode("X"));
+  box.appendChild(text);
+  box.appendChild(button);
+
   button.addEventListener("click", function(e) {
     Workspace.destroy(workspace.name);
 
     e.stopPropagation();
   });
 
-  box.appendChild(text);
-  box.appendChild(button);
-
-  // This is the easiest way to link the workspace with the HTML element
-  box.workspace = workspace;
-  button.workspace = workspace;
+  box.addEventListener("click", function() {
+    Workspace.open(workspace);
+  });
 
   this.node.appendChild(box);
 };
@@ -115,7 +115,6 @@ HtmlBuilder.prototype.done = function() {
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById("save").addEventListener("submit", save);
   document.getElementById("clean").addEventListener("click", Workspace.destroyAll);
-  document.getElementById("workspaces").addEventListener("click", openWorkspace);
 
   Workspace.onChange(populateWorkspaces);
 
@@ -129,18 +128,6 @@ function save(event) {
 
   document.getElementById("name").value = "";
   Workspace.createFromCurrentWindow(name);
-}
-
-function openWorkspace(e) {
-  var workspace = e.target.workspace;
-
-  // if the target of the click is not a workspace element just ignore the
-  // click
-  if (!workspace) {
-    return;
-  }
-
-  Workspace.open(workspace);
 }
 
 function populateWorkspaces() {
