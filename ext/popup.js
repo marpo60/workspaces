@@ -8,21 +8,25 @@
  * @constructor
  * @this {Workspace}
  * @param {string} name The name of the workspace
- * @param {string[]} urlList The list of URLs associated to the workspace
+ * @param {Object[]} tabs - The list of tabs associated to the workspace
+ * @param {string} employee.title - The title of the tab
+ * @param {string} employee.url - The tab url
+ * @param {string} employee.active - Indicate if the tab is active or not
+ * @param {boolean} employee.pinned - The tab pinned state
  */
-function Workspace(name, urlList) {
+function Workspace(name, tabList) {
   this.name = name;
-  this.urlList = urlList;
+  this.tabList = tabList;
 }
 
 Workspace.prototype.numberOfItems = function() {
-  return this.urlList.length;
+  return this.tabList.length;
 };
 
 Workspace.prototype.save = function() {
   var bucket = {};
 
-  bucket[this.name] = this.urlList;
+  bucket[this.name] = this.tabList;
 
   // We can return a promise of this action
   chrome.storage.local.set(bucket);
@@ -44,7 +48,22 @@ Workspace.all = function() {
 
 Workspace.open = function(workspace) {
   chrome.storage.local.get(workspace.name, function(bucket) {
-    chrome.windows.create({ url: bucket[workspace.name] });
+    chrome.windows.create({ state: 'minimized' }, function(newWindow) {
+      bucket[workspace.name].forEach((tabInfo) => {
+        chrome.tabs.create({
+          windowId: newWindow.id,
+          url: tabInfo.url,
+          pinned: tabInfo.pinned,
+          active: tabInfo.active
+        });
+      });
+
+      // Remove default tab
+      chrome.tabs.remove(newWindow.tabs[0].id)
+      chrome.windows.update(newWindow.id, {
+        state: 'normal'
+      });
+    });
   });
 };
 
@@ -58,8 +77,13 @@ Workspace.destroy = function(name) {
 
 Workspace.createFromCurrentWindow = function(name) {
   chrome.tabs.query({ currentWindow: true }, function(tabs){
-    var urlList = tabs.map(function(tab) {return tab.url;}),
-        workspace = new Workspace(name, urlList);
+    var tabList = tabs.map(function({ url, pinned, title, active }) {
+      return {
+        url, pinned, title, active
+      };
+    });
+
+    var workspace = new Workspace(name, tabList);
 
     workspace.save();
   });
