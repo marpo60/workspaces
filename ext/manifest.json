@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Save workspaces",
   "description": "This extension saves the current windows tab for reusing it later similar to bookmarks.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "background": { "scripts": ["hot-reload.js"] },
   "browser_action": {
     "default_icon": "icon.png",
