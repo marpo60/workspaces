@@ -13,10 +13,16 @@
  * @param {string} employee.url - The tab url
  * @param {string} employee.active - Indicate if the tab is active or not
  * @param {boolean} employee.pinned - The tab pinned state
+ * @param {string} employee.favIconUrl - The tab favicon url
  */
 function Workspace(name, tabList) {
   this.name = name;
   this.tabList = tabList;
+  this.getActiveTab = () => {
+    return this.tabList.find((tab) => {
+      return tab.active;
+    });
+  };
 }
 
 Workspace.prototype.numberOfItems = function() {
@@ -46,7 +52,7 @@ Workspace.all = function() {
   }).then(this.mapLocalStorageItemsToWorkspaces);
 };
 
-Workspace.open = function(workspace) {
+Workspace.open = function(workspace, target) {
   chrome.storage.local.get(workspace.name, function(bucket) {
     chrome.windows.create({ state: 'minimized' }, function(newWindow) {
       bucket[workspace.name].forEach((tabInfo) => {
@@ -77,9 +83,9 @@ Workspace.destroy = function(name) {
 
 Workspace.createFromCurrentWindow = function(name) {
   chrome.tabs.query({ currentWindow: true }, function(tabs){
-    var tabList = tabs.map(function({ url, pinned, title, active }) {
+    var tabList = tabs.map(function({ url, pinned, title, active, favIconUrl }) {
       return {
-        url, pinned, title, active
+        url, pinned, title, active, favIconUrl
       };
     });
 
@@ -101,23 +107,31 @@ function HtmlBuilder(container) {
 HtmlBuilder.prototype.buildWorkspace = function(workspace) {
   var box = document.createElement("li"),
       text = document.createElement("span"),
-      button = document.createElement("button");
+      textCount = document.createElement("span"),
+      button = document.createElement("button"),
+      bg = document.createElement("div");
 
   text.appendChild(document.createTextNode(workspace.name));
-  text.appendChild(document.createTextNode(`[${workspace.numberOfItems()}]`));
+  textCount.appendChild(document.createTextNode(`[${workspace.numberOfItems()} tabs]`));
+  textCount.classList.add('tab-count');
 
   button.appendChild(document.createTextNode("X"));
+
+  bg.classList.add("bg");
+  bg.style.backgroundImage = `url('${workspace.getActiveTab().favIconUrl}')`;
+
+  box.appendChild(bg);
   box.appendChild(text);
+  box.appendChild(textCount);
   box.appendChild(button);
 
   button.addEventListener("click", function(e) {
     Workspace.destroy(workspace.name);
-
     e.stopPropagation();
   });
 
   box.addEventListener("click", function() {
-    Workspace.open(workspace);
+    Workspace.open(workspace, this);
   });
 
   this.node.appendChild(box);
