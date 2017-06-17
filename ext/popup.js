@@ -54,7 +54,9 @@ Workspace.all = function() {
 
 Workspace.open = function(workspace, target) {
   chrome.storage.local.get(workspace.name, function(bucket) {
-    chrome.windows.create({ state: 'minimized' }, function(newWindow) {
+    chrome.windows.create(function(newWindow) {
+      let isFirstTabLoad = false;
+
       bucket[workspace.name].forEach((tabInfo) => {
         chrome.tabs.create({
           windowId: newWindow.id,
@@ -62,12 +64,12 @@ Workspace.open = function(workspace, target) {
           pinned: tabInfo.pinned,
           active: tabInfo.active
         });
-      });
 
-      // Remove default tab
-      chrome.tabs.remove(newWindow.tabs[0].id)
-      chrome.windows.update(newWindow.id, {
-        state: 'normal'
+        if (!isFirstTabLoad) {
+          // Remove default tab
+          chrome.tabs.remove(newWindow.tabs[0].id);
+          isFirstTabLoad = true;
+        }
       });
     });
   });
@@ -109,7 +111,7 @@ HtmlBuilder.prototype.buildWorkspace = function(workspace) {
       text = document.createElement("span"),
       textCount = document.createElement("span"),
       button = document.createElement("button"),
-      bg = document.createElement("div");
+      icon = document.createElement("img");
 
   text.appendChild(document.createTextNode(workspace.name));
   textCount.appendChild(document.createTextNode(`[${workspace.numberOfItems()} tabs]`));
@@ -117,10 +119,14 @@ HtmlBuilder.prototype.buildWorkspace = function(workspace) {
 
   button.appendChild(document.createTextNode("X"));
 
-  bg.classList.add("bg");
-  bg.style.backgroundImage = `url('${workspace.getActiveTab().favIconUrl}')`;
+  icon.classList.add("favicon");
+  icon.src = workspace.getActiveTab().favIconUrl;
 
-  box.appendChild(bg);
+  icon.onerror = () => {
+    icon.src = 'icon.png';
+  }
+
+  box.appendChild(icon);
   box.appendChild(text);
   box.appendChild(textCount);
   box.appendChild(button);

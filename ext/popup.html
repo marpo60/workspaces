@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Save workspaces</title>
+    <link href="https://fonts.googleapis.com/css?family=Pathway+Gothic+One" rel="stylesheet">
     <style>
       /*
         Colors
@@ -22,8 +23,9 @@
 
         padding: 0;
         margin: 10px;
-        width: 336px;
+        width: 405px;
         min-height: 100px;
+        font-family: 'Pathway Gothic One', sans-serif;
       }
 
       ul {
@@ -60,18 +62,26 @@
       }
 
       #workspaces li {
-        width: 100px;
-        min-height: 100px;
+        width: 120px;
+        min-height: 120px;
         margin: 5px;
         border: 1px solid #d4d4d4;
-        border-radius: 2px;
-        display: block;
+        border-radius: 3px;
+        display: flex;
+        flex-direction: column;
         position: relative;
         text-align: center;
         list-style-type: none;
         cursor: pointer;
         transition: all ease-in 200ms;
         box-shadow: 0 0 0 1px #fff;
+      }
+
+      #workspaces li > .favicon {
+        width: 26px;
+        height: 26px;
+        margin-top: 8px;
+        align-self: center;
       }
 
       #workspaces li > button {
@@ -87,45 +97,28 @@
       }
 
       #workspaces li > span {
-        word-wrap: break-word;
-        width: 98%;
-        position: absolute;
-        top: 50%;
-        left: 1%;
-        transform: translate(0, -50%);
+        display: block;
+        font-size: 20px;
+        line-height: 1.2;
+        margin-top: 8px;
         color: #333;
+        word-wrap: break-word;
+        flex: 1;
         text-shadow: 0px 0px 5px rgba(255,255,255,.8), 0 0 1px #fff;
-        font-size: 15px;
       }
 
       #workspaces li > .tab-count {
-        top: 100%;
-        transform: translate(0, -100%);
+        display: block;
         font-size: 10px;
-        padding-bottom: 5px;
-      }
-
-      #workspaces li > .bg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        filter: blur(5px);
-        -webkit-filter: blur(3px);
-        opacity: .1;
-        background-size: 100% 100%; /* Don't user cover to allow transitions */
-        background-position: center center;
-        transition: all .2s;
+        margin-bottom: 8px;
+        flex-grow: 0;
+        flex-shrink: 0;
+        margin-top: 12px;
+        font-family: sans-serif;
       }
 
       #workspaces li:hover {
         border-color: #9c9c9c;
-      }
-
-      #workspaces li:hover > .bg {
-        background-size: 130% 130%;
-        transition: all .3s;
       }
     </style>
 
