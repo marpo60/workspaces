@@ -106,30 +106,63 @@ function HtmlBuilder(container) {
   this.node = document.createElement("ul");
 }
 
+HtmlBuilder.prototype.generateFavicon = function(favIconUrl, className) {
+  var icon = document.createElement("img");
+
+  icon.classList.add("favicon");
+  if (className) {
+    icon.classList.add(className);
+  }
+
+  icon.src = favIconUrl;
+
+  icon.onerror = () => {
+    icon.src = 'icon.png';
+  }
+
+  return icon;
+}
+
 HtmlBuilder.prototype.buildWorkspace = function(workspace) {
   var box = document.createElement("li"),
+      removeAll = document.createElement("p"),
+      removeLnk = document.createElement("a"),
       text = document.createElement("span"),
       textCount = document.createElement("span"),
       button = document.createElement("button"),
-      icon = document.createElement("img");
+      icons = document.createElement("div");
 
+  removeLnk.appendChild(document.createTextNode("Remove all workspaces"));
   text.appendChild(document.createTextNode(workspace.name));
   textCount.appendChild(document.createTextNode(`[${workspace.numberOfItems()} tabs]`));
   textCount.classList.add('tab-count');
 
   button.appendChild(document.createTextNode("X"));
 
-  icon.classList.add("favicon");
-  icon.src = workspace.getActiveTab().favIconUrl;
+  icons.classList.add('favicons');
+  let icon = this.generateFavicon(workspace.getActiveTab().favIconUrl);
+  icons.appendChild(icon);
 
-  icon.onerror = () => {
-    icon.src = 'icon.png';
+  if (workspace.numberOfItems() >= 3) {
+    var urls = workspace.tabList.map(function(item) {
+      if (!item.active) {
+        return item.favIconUrl;
+      }
+    });
+
+    icons.appendChild(this.generateFavicon(urls[0], 'favicon-left'));
+    icons.appendChild(this.generateFavicon(urls[urls.length-1], 'favicon-right'));
   }
 
-  box.appendChild(icon);
+  box.appendChild(removeAll);
+  box.appendChild(icons);
   box.appendChild(text);
   box.appendChild(textCount);
   box.appendChild(button);
+
+  removeLnk.addEventListener("click", function() {
+    Workspace.destroyAll();
+  });
 
   button.addEventListener("click", function(e) {
     Workspace.destroy(workspace.name);
@@ -141,11 +174,37 @@ HtmlBuilder.prototype.buildWorkspace = function(workspace) {
   });
 
   this.node.appendChild(box);
-};
+}
 
 HtmlBuilder.prototype.buildEmptyState = function() {
-  this.node = document.createTextNode(
-    "To create a new workspace just write the name of the workspace on the input and hit enter!");
+  var box = document.createElement("div"),
+    title = document.createElement("span"),
+    text = document.createElement("p"),
+    footer = document.createElement("div"),
+    github = document.createElement("a"),
+    rank = document.createElement("a");
+
+  box.classList.add('empty-state');
+  title.appendChild(document.createTextNode("THERE ARE NO WORKSPACES YET"));
+  text.appendChild(document.createTextNode("To create a new workspace just write the name of the workspace on the input and hit enter!"));
+
+  github.appendChild(document.createTextNode("Github"));
+  github.href = "https://github.com";
+  github.target = "blank";
+
+  rank.appendChild(document.createTextNode("Rank this extension"));
+  rank.href = "https://google.com";
+  rank.target = "blank";
+
+  footer.append(github);
+  footer.append(rank);
+  footer.classList.add('footer');
+
+  box.append(title);
+  box.append(text);
+  box.append(footer);
+  this.node = box;
+
 };
 
 HtmlBuilder.prototype.done = function() {
@@ -158,7 +217,6 @@ HtmlBuilder.prototype.done = function() {
  */
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById("save").addEventListener("submit", save);
-  document.getElementById("clean").addEventListener("click", Workspace.destroyAll);
 
   Workspace.onChange(populateWorkspaces);
 

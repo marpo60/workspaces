@@ -20,10 +20,8 @@
         background-color: rgb(246,246,246);
         font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
         font-size: 14px;
-
         padding: 0;
         margin: 10px;
-        width: 405px;
         min-height: 100px;
         font-family: 'Pathway Gothic One', sans-serif;
       }
@@ -57,6 +55,7 @@
       }
 
       #workspaces ul {
+        width: 405px;
         display: flex;
         flex-wrap: wrap;
       }
@@ -77,11 +76,43 @@
         box-shadow: 0 0 0 1px #fff;
       }
 
-      #workspaces li > .favicon {
+      #workspaces li > .favicons {
+        position: relative;
         width: 26px;
         height: 26px;
         margin-top: 8px;
         align-self: center;
+      }
+
+      #workspaces li > .favicons .favicon {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 26px;
+        height: 26px;
+        z-index: 10;
+        opacity: 1;
+        background-color: rgb(246,246,246);
+        transition: all .2s ease-out;
+      }
+
+      #workspaces li > .favicons .favicon.favicon-left,
+      #workspaces li > .favicons .favicon.favicon-right {
+        z-index: 9;
+      }
+
+      #workspaces li:hover > .favicons .favicon.favicon-left {
+        border: solid 1px #ccc;
+        opacity: .9;
+        transform: translateX(-45%) scale(.7);
+        transition: all .2s ease-in;`
+      }
+
+      #workspaces li:hover > .favicons .favicon.favicon-right {
+        border: solid 1px #ccc;
+        opacity: .9;
+        transform: translateX(45%) scale(.7);`
+        transition: all .2s ease-in;
       }
 
       #workspaces li > button {
@@ -120,6 +151,48 @@
       #workspaces li:hover {
         border-color: #9c9c9c;
       }
+
+      .empty-state {
+        background: url('empty-logo.png') no-repeat center right;
+        width: 360px;
+        height: 160px;
+        display: flex;
+        flex-direction: column;
+        margin-right: -10px;
+      }
+
+      .empty-state span {
+        font-size: 26px;
+        display: block;
+        margin-top: 15px;
+        text-shadow: 1px 1px 1px #fff;
+        flex-grow: 0;
+        flex-shrink: 0;
+      }
+
+      .empty-state p {
+        text-align: left;
+        margin-top: 10px;
+        line-height: 1.4;
+        font-size: 16px;
+        width: 315px;
+        color: #777;
+        text-shadow: 1px 1px 1px #fff;
+        flex: 1;
+      }
+
+      .empty-state .footer a {
+        display: inline-block;
+        color: #777;
+        text-decoration: none;
+        margin-right: 10px;
+      }
+
+      .empty-state .footer a:hover {
+        color: #333;
+        cursor: pointer;
+        text-decoration: underline;
+      }
     </style>
 
     <script src="popup.js"></script>
@@ -128,9 +201,6 @@
     <form id="save">
       <input id="name" type="text" placeholder="Workspace name..." required autocomplete="off"></input>
     </form>
-    <p>
-      <a id="clean">Remove all workspaces</a>
-    </p>
     <div id="workspaces"></div>
   </body>
 </html>
