@@ -26,14 +26,32 @@
         font-family: 'Pathway Gothic One', sans-serif;
       }
 
+      input[type="text"] {
+        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+        outline: none;
+        font-size: 13px;
+        color: #333;
+        border: 1px solid #d4d4d4;
+        box-shadow: 0 0 0 1px rgba(255,255,255,.5);
+        border-radius: 3px;
+      }
+
+      input[type="text"]:focus {
+        border-color: #9c9c9c;
+      }
+
       ul {
         padding-left: 0;
       }
 
       a {
-        color: blue;
+        color: #333;
         text-decoration: underline;
         cursor: pointer;
+      }
+
+      a:hover {
+        color: #d47620;
       }
 
       input[type=text] {
@@ -49,13 +67,18 @@
         margin-bottom: 2px;
       }
 
-      p {
-        margin: 0;
+      #workspaces > header {
         text-align: right;
+        margin-left: -10px;
+        margin-right: -10px;
+        padding: 5px 15px 10px 15px;
+        font-size: 17px;
+        border-bottom: 1px solid #d4d4d4;
+        box-shadow: 0 1px 0px 1px rgba(255,255,255,.5);
       }
 
-      #workspaces ul {
-        width: 405px;
+      #workspaces > ul {
+        width: 396px;
         display: flex;
         flex-wrap: wrap;
       }
@@ -148,6 +171,10 @@
         font-family: sans-serif;
       }
 
+      #workspaces li:hover > .tab-count {
+        color: #d47620;
+      }
+
       #workspaces li:hover {
         border-color: #9c9c9c;
       }
@@ -174,8 +201,8 @@
         text-align: left;
         margin-top: 10px;
         line-height: 1.4;
-        font-size: 16px;
-        width: 315px;
+        font-size: 17px;
+        width: 290px;
         color: #777;
         text-shadow: 1px 1px 1px #fff;
         flex: 1;
@@ -186,6 +213,7 @@
         color: #777;
         text-decoration: none;
         margin-right: 10px;
+        font-size: 15px;
       }
 
       .empty-state .footer a:hover {
