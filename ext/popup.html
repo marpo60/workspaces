@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Save workspaces</title>
+    <link href="https://fonts.googleapis.com/css?family=Pathway+Gothic+One" rel="stylesheet">
     <style>
       /*
         Colors
@@ -19,11 +20,24 @@
         background-color: rgb(246,246,246);
         font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
         font-size: 14px;
-
         padding: 0;
         margin: 10px;
-        width: 336px;
         min-height: 100px;
+        font-family: 'Pathway Gothic One', sans-serif;
+      }
+
+      input[type="text"] {
+        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+        outline: none;
+        font-size: 13px;
+        color: #333;
+        border: 1px solid #d4d4d4;
+        box-shadow: 0 0 0 1px rgba(255,255,255,.5);
+        border-radius: 3px;
+      }
+
+      input[type="text"]:focus {
+        border-color: #9c9c9c;
       }
 
       ul {
@@ -31,9 +45,13 @@
       }
 
       a {
-        color: blue;
+        color: #333;
         text-decoration: underline;
         cursor: pointer;
+      }
+
+      a:hover {
+        color: #d47620;
       }
 
       input[type=text] {
@@ -49,48 +67,160 @@
         margin-bottom: 2px;
       }
 
-      p {
-        margin: 0;
+      #workspaces > header {
         text-align: right;
+        margin-left: -10px;
+        margin-right: -10px;
+        padding: 5px 15px 10px 15px;
+        font-size: 17px;
+        border-bottom: 1px solid #d4d4d4;
+        box-shadow: 0 1px 0px 1px rgba(255,255,255,.5);
       }
 
-      #workspaces ul {
+      #workspaces > ul {
+        width: 396px;
         display: flex;
         flex-wrap: wrap;
       }
 
       #workspaces li {
-        width: 100px;
-        min-height: 100px;
+        width: 120px;
+        min-height: 120px;
         margin: 5px;
-        border: 1px solid rgb(232,232,232);
-        border-radius: 4px;
-        display: block;
+        border: 1px solid #d4d4d4;
+        border-radius: 3px;
+        display: flex;
+        flex-direction: column;
         position: relative;
         text-align: center;
         list-style-type: none;
         cursor: pointer;
         transition: all ease-in 200ms;
+        box-shadow: 0 0 0 1px #fff;
+      }
+
+      #workspaces li > .favicons {
+        position: relative;
+        width: 30px;
+        height: 30px;
+        margin-top: 8px;
+        align-self: center;
+      }
+
+      #workspaces li > .favicons .favicon {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 26px;
+        height: 26px;
+        z-index: 10;
+        opacity: 1;
+        border-bottom: solid 1px rgb(246,246,246);
+        background-color: rgb(246,246,246);
+        transition: all .2s ease-out;
+      }
+
+      #workspaces li > .favicons .favicon.favicon-left,
+      #workspaces li > .favicons .favicon.favicon-right {
+        z-index: 9;
+      }
+
+      #workspaces li:hover > .favicons .favicon.favicon-left {
+        border: solid 1px #ccc;
+        opacity: .9;
+        transform: translateX(-45%) scale(.7);
+        transition: all .2s ease-in;`
+      }
+
+      #workspaces li:hover > .favicons .favicon.favicon-right {
+        border: solid 1px #ccc;
+        opacity: .9;
+        transform: translateX(45%) scale(.7);`
+        transition: all .2s ease-in;
+      }
+
+      #workspaces li > button {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        background-color: transparent;
+        border: solid 1px #9c9c9c;
+        color: #9c9c9c;
+        font-size: 8px;
+        padding: 2px 5px;
+        text-align: center;
       }
 
       #workspaces li > span {
-        width: 100px;
+        display: block;
+        font-size: 20px;
+        line-height: 1.2;
+        margin-top: 8px;
+        color: #333;
         word-wrap: break-word;
-        margin: 0;
-        position: absolute;
-        top: 50%;
-        left: 0;
-        transform: translate(0, -50%);
+        flex: 1;
+        text-shadow: 0px 0px 5px rgba(255,255,255,.8), 0 0 1px #fff;
       }
 
-      #workspaces li:nth-of-type(2n+1) {
-        background: rgb(232,232,232);
+      #workspaces li > .tab-count {
+        display: block;
+        font-size: 10px;
+        margin-bottom: 8px;
+        flex-grow: 0;
+        flex-shrink: 0;
+        margin-top: 12px;
+        font-family: sans-serif;
+      }
+
+      #workspaces li:hover > .tab-count {
+        color: #d47620;
       }
 
       #workspaces li:hover {
-        background: rgb(185,5,4);
-        border-color: rgb(153,1,0);
-        color: rgb(255,255,255);
+        border-color: #9c9c9c;
+      }
+
+      .empty-state {
+        background: url('empty-logo.png') no-repeat center right;
+        width: 360px;
+        height: 160px;
+        display: flex;
+        flex-direction: column;
+        margin-right: -10px;
+      }
+
+      .empty-state span {
+        font-size: 26px;
+        display: block;
+        margin-top: 15px;
+        text-shadow: 1px 1px 1px #fff;
+        flex-grow: 0;
+        flex-shrink: 0;
+      }
+
+      .empty-state p {
+        text-align: left;
+        margin-top: 10px;
+        line-height: 1.4;
+        font-size: 17px;
+        width: 290px;
+        color: #777;
+        text-shadow: 1px 1px 1px #fff;
+        flex: 1;
+      }
+
+      .empty-state .footer a {
+        display: inline-block;
+        color: #777;
+        text-decoration: none;
+        margin-right: 10px;
+        font-size: 15px;
+      }
+
+      .empty-state .footer a:hover {
+        color: #333;
+        cursor: pointer;
+        text-decoration: underline;
       }
     </style>
 
@@ -100,10 +230,6 @@
     <form id="save">
       <input id="name" type="text" placeholder="Workspace name..." required autocomplete="off"></input>
     </form>
-    <p>
-      <a id="clean">Remove all workspaces</a>
-    </p>
     <div id="workspaces"></div>
   </body>
 </html>
-
