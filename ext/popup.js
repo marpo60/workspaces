@@ -8,7 +8,7 @@
  * @constructor
  * @this {Workspace}
  * @param {string} name The name of the workspace
- * @param {Object[]} tabs - The list of tabs associated to the workspace
+ * @param {Object[]} tabList - The list of tabs associated to the workspace
  * @param {string} employee.title - The title of the tab
  * @param {string} employee.url - The tab url
  * @param {string} employee.active - Indicate if the tab is active or not
@@ -18,11 +18,7 @@
 function Workspace(name, tabList) {
   this.name = name;
   this.tabList = tabList;
-  this.getActiveTab = () => {
-    return this.tabList.find((tab) => {
-      return tab.active;
-    });
-  };
+  this.getActiveTab = () => this.tabList.find((tab) => tab.active);
 }
 
 Workspace.prototype.numberOfItems = function() {
@@ -52,7 +48,7 @@ Workspace.all = function() {
   }).then(this.mapLocalStorageItemsToWorkspaces);
 };
 
-Workspace.open = function(workspace, target) {
+Workspace.open = function(workspace) {
   chrome.storage.local.get(workspace.name, function(bucket) {
     chrome.windows.create(function(newWindow) {
       let isFirstTabLoad = false;
@@ -83,7 +79,11 @@ Workspace.createFromCurrentWindow = function(name) {
   chrome.tabs.query({ currentWindow: true }, function(tabs){
     var tabList = tabs.map(function({ url, pinned, title, active, favIconUrl }) {
       return {
-        url, pinned, title, active, favIconUrl
+        url,
+        pinned,
+        title,
+        active,
+        favIconUrl
       };
     });
 
@@ -115,22 +115,21 @@ HtmlBuilder.prototype.generateFavicon = function(favIconUrl, className) {
 
   icon.onerror = () => {
     icon.src = 'icon.png';
-  }
+  };
 
   return icon;
-}
+};
 
-HtmlBuilder.prototype.buildHeader = function(workspaces) {
+HtmlBuilder.prototype.buildHeader = function() {
   var removeLnk = document.createElement("a");
 
   removeLnk.appendChild(document.createTextNode("Remove all workspaces"));
   removeLnk.addEventListener("click", function() {
-    // TODO: Create a confirm dialog for this action
     chrome.storage.local.clear();
   });
 
   this.header.appendChild(removeLnk);
-}
+};
 
 HtmlBuilder.prototype.buildWorkspace = function(workspace) {
   var box = document.createElement("li"),
@@ -145,18 +144,16 @@ HtmlBuilder.prototype.buildWorkspace = function(workspace) {
   button.appendChild(document.createTextNode("X"));
   icons.classList.add('favicons');
 
-  let icon = this.generateFavicon(workspace.getActiveTab().favIconUrl);
+  const icon = this.generateFavicon(workspace.getActiveTab().favIconUrl);
   icons.appendChild(icon);
 
   if (workspace.numberOfItems() >= 3) {
-    var urls = workspace.tabList.map(function(item) {
-      if (!item.active) {
-        return item.favIconUrl;
-      }
+    var urls = workspace.tabList.filter(function(item) {
+      return !item.active;
     });
 
-    icons.appendChild(this.generateFavicon(urls[0], 'favicon-left'));
-    icons.appendChild(this.generateFavicon(urls[urls.length-1], 'favicon-right'));
+    icons.appendChild(this.generateFavicon(urls[0].favIconUrl, 'favicon-left'));
+    icons.appendChild(this.generateFavicon(urls[urls.length - 1].favIconUrl, 'favicon-right'));
   }
 
   box.appendChild(icons);
@@ -170,11 +167,11 @@ HtmlBuilder.prototype.buildWorkspace = function(workspace) {
   });
 
   box.addEventListener("click", function() {
-    Workspace.open(workspace, this);
+    Workspace.open(workspace);
   });
 
   this.node.appendChild(box);
-}
+};
 
 HtmlBuilder.prototype.buildEmptyState = function() {
   var box = document.createElement("div"),
